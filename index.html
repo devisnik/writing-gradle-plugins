@@ -511,14 +511,18 @@ table.CodeRay td.code>pre{padding:0}
 </head>
 <body class="article toc2 toc-right">
 <div id="header">
-<h1>Writing Gradle Plugins</h1>
+<h1>Writing Gradle Plugins <span class="image"><a class="image" href="https://travis-ci.org/gradle-guides/gs-writing-gradle-plugins"><img src="https://travis-ci.org/gradle-guides/gs-writing-gradle-plugins.svg?branch=master" alt="Build Status"></a></span></h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_what_you_ll_build">What you&#8217;ll build</a></li>
-<li><a href="#_what_you_ll_need">What you&#8217;ll need</a></li>
-<li><a href="#_implementation">Implementation</a></li>
-<li><a href="#_summary">Summary</a></li>
+<li><a href="#what_you_ll_build">What you&#8217;ll build</a></li>
+<li><a href="#what_you_ll_need">What you&#8217;ll need</a></li>
+<li><a href="#create_a_java_project">Create a Java project</a></li>
+<li><a href="#create_the_plugin">Create the plugin</a></li>
+<li><a href="#use_the_plugin_in_your_java_project">Use the plugin in your Java project</a></li>
+<li><a href="#add_plugin_identifier">Add plugin identifier</a></li>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#next_steps">Next steps</a></li>
 </ul>
 </div>
 </div>
@@ -526,137 +530,70 @@ table.CodeRay td.code>pre{padding:0}
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>All too often build engineers get into the habit of defining build logic in a single script. Suffice to say, this practice leads to unmaintainable and hard to understand spaghetti code. While Gradle doesn&#8217;t prevent you from applying this poor engineering practice, it does give you the right tooling for writing maintainable, modularized and encapsulated build logic. This guide will walk you through the basic mechanics of writing reusable Gradle build code with the help of plugins.</p>
+<p>This guide walks you through the process of creating reusable build logic in a Gradle plugin.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_what_you_ll_build"><a class="anchor" href="#_what_you_ll_build"></a>What you&#8217;ll build</h2>
+<h2 id="what_you_ll_build"><a class="anchor" href="#what_you_ll_build"></a>What you&#8217;ll build</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>In the course of this guide, you&#8217;ll create a plugin that serves a typical, real-world use case. Let&#8217;s say you are working on five different projects. All of those projects are building a Java-based application with the help of Gradle. In your organization, JUnit is the standard testing framework for writing unit tests and you decided to resolve its dependency from Maven Central, the publically-available binary repository for Java libraries. Now, you could copy and paste the required Gradle build logic for those assumption from project to project. However, you can be much smarter about it. Why not write a Gradle plugin that encapsulates the logic and applies the functionality with a single one-liner statement?</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">com.acme.java-project</span><span class="delimiter">'</span></span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This guide will take you through the creation process of the plugin step by step. We&#8217;ll start by externalizing build script logic into a script plugin first. Later, we&#8217;ll formulate the same logic as Java class implementation, a so-called binary plugin.</p>
+<p>You&#8217;ll write a simple plugin class that applies some standard Java project configuration. You&#8217;ll then use that plugin for a simple Java build.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_what_you_ll_need"><a class="anchor" href="#_what_you_ll_need"></a>What you&#8217;ll need</h2>
+<h2 id="what_you_ll_need"><a class="anchor" href="#what_you_ll_need"></a>What you&#8217;ll need</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p>About 15 minutes</p>
+<p>About 5 minutes</p>
 </li>
 <li>
-<p>A text editor or Java IDE</p>
+<p>A text editor</p>
 </li>
 <li>
-<p>Basic knowledge of Java and Groovy</p>
+<p>A <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Runtime Environment</a> (JRE), version 1.7 or better</p>
 </li>
 <li>
-<p>Basic knowledge of Gradle build script fundamentals</p>
+<p>Gradle version 3.0 or better</p>
 </li>
 </ul>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_implementation"><a class="anchor" href="#_implementation"></a>Implementation</h2>
+<h2 id="create_a_java_project"><a class="anchor" href="#create_a_java_project"></a>Create a Java project</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Let&#8217;s assume the following <code>build.gradle</code> file you&#8217;d typically see as setup for building a Java-based application.</p>
+<p>~TODO: Various options, such as <code>init</code> task, manual creation, follow the Getting Started Building Java Library, use a Lazybones template~</p>
+</div>
+<div class="paragraph">
+<p>This project will both host and use the plugin you&#8217;re about to create.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="create_the_plugin"><a class="anchor" href="#create_the_plugin"></a>Create the plugin</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>mkdir -p buildSrc/src/main/java/org/example/myplugin</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create the file <code>buildSrc/src/main/java/org/example/myplugin</code> and set its content to:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">java</span><span class="delimiter">'</span></span>
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">org.example.myplugin</span>;
 
-repositories {
-    mavenCentral()
-}
+<span class="keyword">import</span> <span class="include">org.gradle.api.Plugin</span>;
+<span class="keyword">import</span> <span class="include">org.gradle.api.Project</span>;
+<span class="keyword">import</span> <span class="include">org.gradle.api.plugins.JavaPlugin</span>;
 
-dependencies {
-    testCompile <span class="string"><span class="delimiter">'</span><span class="content">junit:junit:4.12</span><span class="delimiter">'</span></span>
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Executing <code>gradle tasks</code> should provide you with tasks specific to Java projects e.g. <code>assemble</code> to compile the Java classes and build the JAR artifact. Let&#8217;s execute the <code>assemble</code> task on the command line:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ gradle assemble
-:compileJava UP-TO-DATE
-:processResources UP-TO-DATE
-:classes UP-TO-DATE
-:jar
-:assemble
-
-BUILD SUCCESSFUL</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>While the intent of the build logic is clear and doesn&#8217;t contain any duplicated code, it would certainly clutter the <code>build.gradle</code> file. Thinking about the logic in the context of a Java-based multi-project build, you&#8217;d need to apply the same logic to every subproject leading to less maintainable and centralized code. When expressing build logic in Gradle, you&#8217;ll want to avoid creating duplicated code as much as possible. How about we externalize this logic into another build script, a so-called script plugin, which you can then import into the <code>build.gradle</code> file?</p>
-</div>
-<div class="sect2">
-<h3 id="_writing_a_script_plugin"><a class="anchor" href="#_writing_a_script_plugin"></a>Writing a script plugin</h3>
-<div class="paragraph">
-<p>The main purpose of a <a href="https://docs.gradle.org/current/userguide/plugins.html#sec:script_plugins">script plugin</a> is to split up build logic based on functional boundaries in order to avoid a <code>build.gradle</code> file that stretches over multiple pages. You can think of a script plugin as a mixin or include of existing build logic that enriches your main <code>build.gradle</code> file.</p>
-</div>
-<div class="paragraph">
-<p>The process for creating a script plugin in Gradle is straightforward. You simply take the logic you&#8217;d like to externalize and put it into a new Gradle file. Let&#8217;s exercise this process by example. First of all, you&#8217;ll create a new file named <code>java-project.gradle</code> under the subdirectory <code>gradle</code>. The directory structure of your project should look as follows:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>.
-├── build.gradle
-└── gradle
-    └── java-project.gradle</pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>Script plugins can live in any directory of your project hierarchy. The <code>gradle</code> subdirectory is a common convention for hosting script plugins. It is however not enforced by Gradle by any means.</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>After creating the file <code>java-project.gradle</code>, move all the logic you currently have in <code>build.gradle</code> into the script plugin. At this point, the <code>build.gradle</code> file should be completely empty. Now how do you tell your <code>build.gradle</code> to consume the script plugin? Very simple - you add the following one-liner to your <code>build.gradle</code> file.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">from</span>: <span class="string"><span class="delimiter">'</span><span class="content">gradle/java-project.gradle</span><span class="delimiter">'</span></span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As you can see, the code in your <code>build.gradle</code> file was significantly reduced which makes it much easier to read and maintain. To verify that the same functionality works as before, let&#8217;s run the same command we ran before: <code>gradle assemble</code>.</p>
-</div>
-<div class="paragraph">
-<p>Script plugins are a great way to divvy up your build logic. However, as build logic becomes more complex, it&#8217;s easier to think about build logic in terms of classes instead of scripts. Classes are usually easier to maintain as you can break up the logic into methods and organize them with the help of packages similar to "regular" application code. Plugins implemented as classes are called binary plugins. Let&#8217;s have a look at how the same problem can be approached with in the form of a binary plugin.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_writing_a_binary_plugin"><a class="anchor" href="#_writing_a_binary_plugin"></a>Writing a binary plugin</h3>
-<div class="paragraph">
-<p>Implementing a <a href="https://docs.gradle.org/current/userguide/plugins.html#sec:binary_plugins">binary plugin</a> isn&#8217;t much harder than implementing a script plugin. The major difference is that you have to stand up a class that implements the <a href="https://docs.gradle.org/current/javadoc/org/gradle/api/Plugin.html">Plugin interface</a>. If you have a closer look at the interface, you will notice that a generic type will have to be provided. 99.9% of all cases this generic type is a <a href="https://docs.gradle.org/current/javadoc/org/gradle/api/Project.html">Project</a> instance. The Project instance stands for the project that applies the plugin. Any logic you want to implement in your plugin class needs to directly work on the project instance. Let&#8217;s have a look at the same logic implemented as binary plugin in Java.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">JavaConventionPlugin</span> <span class="directive">implements</span> Plugin&lt;Project&gt; {
+<span class="directive">public</span> <span class="type">class</span> <span class="class">MyJavaConventionPlugin</span> <span class="directive">implements</span> Plugin&lt;Project&gt; {
     <span class="directive">public</span> <span class="type">void</span> apply(Project project) {
         project.getPlugins().apply(JavaPlugin.class);
         project.getRepositories().mavenCentral();
@@ -666,11 +603,50 @@ BUILD SUCCESSFUL</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Go ahead by replacing the existing logic in your <code>build.gradle</code> file with the code from the previous code example. So far you only created the binary plugin implementation. However, the plugin hasn&#8217;t been applied yet. To apply a binary plugin, you will use the same <a href="https://docs.gradle.org/current/javadoc/org/gradle/api/plugins/PluginAware.html#apply(java.util.Map)"><code>apply()</code> method</a> as you did for the script plugin. Instead of using the <code>from</code> keyword, you&#8217;d use the <code>plugin</code> keyword here. Let&#8217;s apply the binary plugin within the <code>build.gradle</code> file.</p>
+<p>This plugin is using the Gradle API to do exactly the same as this build script fragment:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: JavaConventionPlugin</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">java</span><span class="delimiter">&quot;</span></span>
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile  <span class="string"><span class="delimiter">&quot;</span><span class="content">junit:junit:4.12</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Gradle <code>Project</code> object is the entry point to the entire Gradle API.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Use the Gradle <a href="https://docs.gradle.org/current/dsl/">DSL Reference</a> and <a href="https://docs.gradle.org/current/javadoc/">Javadocs</a> to learn what you can do with the Gradle API. Start with the entry for <a href="https://docs.gradle.org/current/dsl/org.gradle.api.Project.html"><code>Project</code></a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now run the <code>help</code> task and notice how the class in <code>buildSrc</code> automatically gets compiled.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="use_the_plugin_in_your_java_project"><a class="anchor" href="#use_the_plugin_in_your_java_project"></a>Use the plugin in your Java project</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Create/open the <code>build.gradle</code> file in your Java project and add the following line:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: org.example.myplugin.MyJavaConventionPlugin</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -688,128 +664,71 @@ BUILD SUCCESSFUL</pre>
 </table>
 </div>
 <div class="paragraph">
-<p>Having a class definition sit in a build script is awkward and doesn&#8217;t help you with making your script more maintainable. Why not represent the binary plugin implementation as actual class file? As long as the plugin is only used within the same project and doesn&#8217;t have to be shared among independent projects a good place to put those classes is the <code>buildSrc</code> project. If you haven&#8217;t heard about <code>buildSrc</code> yet, please have a closer look.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_externalizing_plugin_code_to_buildsrc"><a class="anchor" href="#_externalizing_plugin_code_to_buildsrc"></a>Externalizing plugin code to buildSrc</h3>
-<div class="paragraph">
-<p>Similar to production source code, build logic implemented as classes needs to be compiled and added to the classpath before it can be used. This is the main purposes of the <a href="https://docs.gradle.org/current/userguide/organizing_build_logic.html#sec:build_sources"><code>buildSrc</code> project</a>. If you create a <code>buildSrc</code> directory in the root directory of your project, Gradle will automatically detect it and treat it as a special project. The <code>buildSrc</code> project defines default conventions used to look for source code that needs to be compiled and added to the classpath of the consuming build script. In our case the consuming build script is the <code>build.gradle</code> file in the root directory of our project. Let&#8217;s get started and create the required directory structure.</p>
+<p>You can now run the build to compile, test and package your Java project:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>.
-├── build.gradle
-└── buildSrc
-    └── src
-        └── main
-            └── java</pre>
+<pre>$ gradle build
+...</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The directory <code>src/main/java</code> is one of the conventions used by the <code>buildSrc</code> project. Any Java source files you put into this directory will be compiled when you execute the project. Let&#8217;s create a new file named <code>JavaConventionPlugin.java</code> in this directory and copy the Java class definition of <code>JavaConventionPlugin</code> we already had in place.</p>
+<p>This doesn&#8217;t look as tidy as when you apply plugins with the <code>plugins {}</code> block, but we can fix that by adding a plugin identifier.</p>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
+</div>
+</div>
+<div class="sect1">
+<h2 id="add_plugin_identifier"><a class="anchor" href="#add_plugin_identifier"></a>Add plugin identifier</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>Be aware that classes can be put into any package underneath the Java source directory. The plugin in this example uses the default package for simplicity reasons.</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>Classes created under <code>buildSrc</code> live outside of the context of a <code>build.gradle</code> file. In practice that means that you will have to explicitly import external classes. That&#8217;s also the case for classes from the Gradle API. For your Java class you will need to define the following imports:</p>
+<p>Add a <code>buildSrc/src/main/resources/META-INF/gradle-plugins/org.example.my-java.properties</code> file that contains the following:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">org.gradle.api.Plugin</span>;
-<span class="keyword">import</span> <span class="include">org.gradle.api.Project</span>;
-<span class="keyword">import</span> <span class="include">org.gradle.api.plugins.JavaPlugin</span>;</code></pre>
+<pre>implementation-class=org.example.myplugin.MyJavaConventionPlugin</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Now that you moved the class definition in a Groovy source file under <code>buildSrc</code>, there&#8217;s no more need to keep the script plugin <code>java-project.gradle</code>. You can safely delete the file now. Let&#8217;s execute the command <code>gradle assemble</code> to ensure that the plugin is still working as expected.</p>
+<p>You must put the properties file in the directory <code>META-INF/gradle-plugins</code> as Gradle will try to resolve the file from that specific location in the plugin JAR. Now that your plugin has an identifier, you can replace</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ gradle assemble
-:buildSrc:clean UP-TO-DATE
-:buildSrc:compileJava
-:buildSrc:compileGroovy UP-TO-DATE
-:buildSrc:processResources UP-TO-DATE
-:buildSrc:classes
-:buildSrc:jar
-:buildSrc:assemble
-:buildSrc:compileTestJava UP-TO-DATE
-:buildSrc:compileTestGroovy UP-TO-DATE
-:buildSrc:processTestResources UP-TO-DATE
-:buildSrc:testClasses UP-TO-DATE
-:buildSrc:test UP-TO-DATE
-:buildSrc:check UP-TO-DATE
-:buildSrc:build
-:compileJava UP-TO-DATE
-:processResources UP-TO-DATE
-:classes UP-TO-DATE
-:jar
-:assemble</pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: org.example.myplugin.MyJavaConventionPlugin</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>As you can see in the console output, <code>buildSrc</code> is executed as actual project with its own lifecycle of tasks. Effectively, Gradle compiled the code found under <code>src/main/groovy</code> by running the task <code>:buildSrc:compileJava</code>, created a JAR from the class files with <code>:buildSrc:jar</code> and added it to the classpath of the <code>build.gradle</code> file.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_providing_a_plugin_identifier"><a class="anchor" href="#_providing_a_plugin_identifier"></a>Providing a plugin identifier</h3>
-<div class="paragraph">
-<p>Applying a binary plugin by type is only one way to use a binary plugin in a build script. The other, more descriptive option, is to provide a so-called <a href="https://docs.gradle.org/current/userguide/custom_plugins.html#sec:creating_a_plugin_id">plugin identifier</a>, a string that uniquely identifies a plugin implementation on the classpath.</p>
-</div>
-<div class="paragraph">
-<p>It only takes a single step to set up an identifier for your plugin. The JAR file of the plugin needs to contain a properties file that resembles the identifier that contains a pointer to the plugin type. For example, if you&#8217;d like to provide the identifier <code>com.acme.java-project</code> for our plugin, then you&#8217;d need to create the file <code>com.acme.java-project.properties</code>. The properties file requires to contain a key/value mapping from <code>implementation-class</code> to the <code>JavaConventionPlugin</code>. Let&#8217;s set up the properties file <code>buildSrc/src/main/resources/META-INF/gradle-plugins/com.acme.java-project.properties</code> with the following content.</p>
+<p>with</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>implementation-class=JavaConventionPlugin</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>It&#8217;s mandatory to create the properties file in the directory <code>META-INF/gradle-plugins</code> as Gradle will try to resolve the file from that specific location in the bundled JAR file. Now that our plugins provides an identifier, we can change the <code>build.gradle</code> file to use it.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">com.acme.java-project</span><span class="delimiter">'</span></span></code></pre>
-</div>
+<pre class="CodeRay highlight"><code data-lang="groovy">plugins {
+    id <span class="string"><span class="delimiter">&quot;</span><span class="content">org.example.my-java</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_summary"><a class="anchor" href="#_summary"></a>Summary</h2>
+<h2 id="summary"><a class="anchor" href="#summary"></a>Summary</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Congratulations! You successfully learned how to write a basic script and binary plugin with Gradle. There&#8217;s far more to learn. Please have a look at the following resources to expand your knowledge.</p>
+<p>~TODO: Write the summary!</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="next_steps"><a class="anchor" href="#next_steps"></a>Next steps</h2>
+<div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p>Writing tests for a plugin</p>
+<p>Publish the plugin to plugin portal</p>
 </li>
 <li>
-<p>Configuring a plugin through a custom DSL</p>
+<p>Publish to private company repository</p>
 </li>
 <li>
-<p>Publishing a plugin</p>
-</li>
-<li>
-<p>Plugin writing tips &amp; tricks</p>
-</li>
-<li>
-<p>Writing a plugin in different JVM-based languages (e.g. Groovy, Kotlin)</p>
+<p>Functionally test the plugin</p>
 </li>
 </ul>
 </div>
@@ -818,7 +737,7 @@ BUILD SUCCESSFUL</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-05 10:22:48 BST
+Last updated 2016-09-08 14:11:48 UTC
 </div>
 </div>
 </body>
