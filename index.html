@@ -511,18 +511,17 @@ table.CodeRay td.code>pre{padding:0}
 </head>
 <body class="article toc2 toc-right">
 <div id="header">
-<h1>Writing Gradle Plugins <span class="image"><a class="image" href="https://travis-ci.org/gradle-guides/gs-writing-gradle-plugins"><img src="https://travis-ci.org/gradle-guides/gs-writing-gradle-plugins.svg?branch=master" alt="Build Status"></a></span></h1>
+<h1>Writing Gradle Plugins</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#what_you_ll_build">What you&#8217;ll build</a></li>
-<li><a href="#what_you_ll_need">What you&#8217;ll need</a></li>
-<li><a href="#create_a_java_project">Create a Java project</a></li>
-<li><a href="#create_the_plugin">Create the plugin</a></li>
-<li><a href="#use_the_plugin_in_your_java_project">Use the plugin in your Java project</a></li>
-<li><a href="#add_plugin_identifier">Add plugin identifier</a></li>
-<li><a href="#summary">Summary</a></li>
-<li><a href="#next_steps">Next steps</a></li>
+<li><a href="#_what_you_ll_build">What you&#8217;ll build</a></li>
+<li><a href="#_what_you_ll_need">What you&#8217;ll need</a></li>
+<li><a href="#_create_a_project">Create a project</a></li>
+<li><a href="#_create_the_plugin">Create the plugin</a></li>
+<li><a href="#_use_the_plugin_in_the_main_project">Use the plugin in the main project</a></li>
+<li><a href="#_summary">Summary</a></li>
+<li><a href="#_next_steps">Next steps</a></li>
 </ul>
 </div>
 </div>
@@ -535,7 +534,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect1">
-<h2 id="what_you_ll_build"><a class="anchor" href="#what_you_ll_build"></a>What you&#8217;ll build</h2>
+<h2 id="_what_you_ll_build"><a class="anchor" href="#_what_you_ll_build"></a>What you&#8217;ll build</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>You&#8217;ll write a simple plugin class that applies some standard Java project configuration. You&#8217;ll then use that plugin for a simple Java build.</p>
@@ -543,83 +542,95 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect1">
-<h2 id="what_you_ll_need"><a class="anchor" href="#what_you_ll_need"></a>What you&#8217;ll need</h2>
+<h2 id="_what_you_ll_need"><a class="anchor" href="#_what_you_ll_need"></a>What you&#8217;ll need</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p>About 5 minutes</p>
+<p>About [TBD] minutes</p>
 </li>
 <li>
 <p>A text editor</p>
 </li>
 <li>
-<p>A <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Runtime Environment</a> (JRE), version 1.7 or better</p>
+<p>A <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Runtime Environment</a> (JRE) or <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Development Kit</a> (JDK), version 1.8 or better</p>
 </li>
 <li>
-<p>Gradle version 3.0 or better</p>
+<p>A <a href="https://docs.gradle.org/current/userguide//installation.html#sec:download">Gradle distribution</a>, version {gradle-version} or better</p>
 </li>
 </ul>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="create_a_java_project"><a class="anchor" href="#create_a_java_project"></a>Create a Java project</h2>
+<h2 id="_create_a_project"><a class="anchor" href="#_create_a_project"></a>Create a project</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>~TODO: Various options, such as <code>init</code> task, manual creation, follow the Getting Started Building Java Library, use a Lazybones template~</p>
+<p>You&#8217;ll need to create a directory for this plugin project and switch to it:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ mkdir greeting-plugin
+$ cd greeting-plugin</pre>
+</div>
 </div>
 <div class="paragraph">
-<p>This project will both host and use the plugin you&#8217;re about to create.</p>
+<p>Next, you will create a special directory structure for the plugin code:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ mkdir -p buildSrc/src/main/java/org/example/greeting</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you&#8217;d like to learn more about this <code>buildSrc</code> directory, you can read about how it allows you to organize your build logic <a href="https://docs.gradle.org/current/userguide/organizing_build_logic.html#sec:build_sources">in the User Manual</a>.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="create_the_plugin"><a class="anchor" href="#create_the_plugin"></a>Create the plugin</h2>
+<h2 id="_create_the_plugin"><a class="anchor" href="#_create_the_plugin"></a>Create the plugin</h2>
 <div class="sectionbody">
-<div class="listingblock">
-<div class="content">
-<pre>mkdir -p buildSrc/src/main/java/org/example/myplugin</pre>
-</div>
-</div>
 <div class="paragraph">
-<p>Create the file <code>buildSrc/src/main/java/org/example/myplugin</code> and set its content to:</p>
+<p>Create the file <code>GreetingPlugin.java</code> in the <code>buildSrc/src/main/java/org/example/greeting</code> directory you just created. The contents of that file should be the following:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">org.example.myplugin</span>;
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">org.example.greeting</span>;
 
 <span class="keyword">import</span> <span class="include">org.gradle.api.Plugin</span>;
 <span class="keyword">import</span> <span class="include">org.gradle.api.Project</span>;
-<span class="keyword">import</span> <span class="include">org.gradle.api.plugins.JavaPlugin</span>;
 
-<span class="directive">public</span> <span class="type">class</span> <span class="class">MyJavaConventionPlugin</span> <span class="directive">implements</span> Plugin&lt;Project&gt; {
-    <span class="directive">public</span> <span class="type">void</span> apply(Project project) {
-        project.getPlugins().apply(JavaPlugin.class);
-        project.getRepositories().mavenCentral();
-        project.getDependencies().add(<span class="string"><span class="delimiter">&quot;</span><span class="content">testCompile</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">junit:junit:4.12</span><span class="delimiter">&quot;</span></span>);
+<span class="directive">public</span> <span class="type">class</span> <span class="class">GreetingPlugin</span> <span class="directive">implements</span> Plugin&lt;Project&gt; {
+    <span class="directive">public</span> <span class="type">void</span> apply(<span class="directive">final</span> Project project) {
+        <span class="directive">final</span> <span class="predefined-type">String</span> extensionName = <span class="string"><span class="delimiter">&quot;</span><span class="content">greeting</span><span class="delimiter">&quot;</span></span>;
+        project.getExtensions().create(extensionName, GreetingExtension.class);         <i class="conum" data-value="1"></i><b>(1)</b>
+
+        project.getTasks().create(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>, (task) -&gt; {                                  <i class="conum" data-value="2"></i><b>(2)</b>
+            task.doLast((t) -&gt; {
+                GreetingExtension extension =
+                        (GreetingExtension) project.getExtensions().getByName(extensionName);
+                <span class="predefined-type">String</span> msg = extension.getMessage() + <span class="string"><span class="delimiter">&quot;</span><span class="content"> </span><span class="delimiter">&quot;</span></span> + extension.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content">!</span><span class="delimiter">&quot;</span></span>;
+                <span class="predefined-type">System</span>.out.println(msg);
+            });
+        });
     }
 }</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>This plugin is using the Gradle API to do exactly the same as this build script fragment:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">java</span><span class="delimiter">&quot;</span></span>
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    testCompile  <span class="string"><span class="delimiter">&quot;</span><span class="content">junit:junit:4.12</span><span class="delimiter">&quot;</span></span>
-}</code></pre>
-</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Creates a new extension that can be configured in the build script</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Creates a new task named "hello" in the project that the plugin gets applied to</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>The Gradle <code>Project</code> object is the entry point to the entire Gradle API.</p>
+<p>The Gradle <code>Project</code> object is the entry point to the entire Gradle API and allows you to do anything you can do in a normal build script. In this case, that involves creating an extension class, whose use you will see later when you apply the plugin, and creating a task.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -634,82 +645,118 @@ Use the Gradle <a href="https://docs.gradle.org/current/dsl/">DSL Reference</a> 
 </table>
 </div>
 <div class="paragraph">
-<p>Now run the <code>help</code> task and notice how the class in <code>buildSrc</code> automatically gets compiled.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="use_the_plugin_in_your_java_project"><a class="anchor" href="#use_the_plugin_in_your_java_project"></a>Use the plugin in your Java project</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Create/open the <code>build.gradle</code> file in your Java project and add the following line:</p>
+<p>Alongside that plugin source file, create another file called <code>GreetingExtension.java</code> and put the following in it:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: org.example.myplugin.MyJavaConventionPlugin</code></pre>
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">org.example.greeting</span>;
+
+<span class="directive">public</span> <span class="type">class</span> <span class="class">GreetingExtension</span> {
+    <span class="directive">private</span> <span class="predefined-type">String</span> name = <span class="string"><span class="delimiter">&quot;</span><span class="content">World</span><span class="delimiter">&quot;</span></span>;                                                      <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="directive">private</span> <span class="predefined-type">String</span> message = <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello</span><span class="delimiter">&quot;</span></span>;                                                   <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> getName() { <span class="keyword">return</span> name; }
+    <span class="directive">public</span> <span class="type">void</span> setName(<span class="predefined-type">String</span> name) { <span class="local-variable">this</span>.name = name; }
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> getMessage() { <span class="keyword">return</span> message; }
+    <span class="directive">public</span> <span class="type">void</span> setMessage(<span class="predefined-type">String</span> message) { <span class="local-variable">this</span>.message = message; }
+}</code></pre>
 </div>
 </div>
-<div class="admonitionblock note">
+<div class="colist arabic">
 <table>
 <tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>You might not be aware of it but you are applying the plugin by type. <code>JavaConventionPlugin</code> is the fully qualified class of your plugin implementation. One of Groovy&#8217;s language features is to make the <a href="http://groovy-lang.org/style-guide.html#_classes_as_first_class_citizens"><code>.class</code> suffix for the class definition optional</a>. That&#8217;s why the code example doesn&#8217;t show <code>JavaConventionPlugin.class</code>.</p>
-</div>
-</td>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Sets some default values for our extension properties</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>You can now run the build to compile, test and package your Java project:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ gradle build
-...</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This doesn&#8217;t look as tidy as when you apply plugins with the <code>plugins {}</code> block, but we can fix that by adding a plugin identifier.</p>
+<p>You now have a plugin, but a plugin alone doesn&#8217;t do anything. You need to apply it in another project.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="add_plugin_identifier"><a class="anchor" href="#add_plugin_identifier"></a>Add plugin identifier</h2>
+<h2 id="_use_the_plugin_in_the_main_project"><a class="anchor" href="#_use_the_plugin_in_the_main_project"></a>Use the plugin in the main project</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Add a <code>buildSrc/src/main/resources/META-INF/gradle-plugins/org.example.my-java.properties</code> file that contains the following:</p>
+<p>Create a <code>build.gradle</code> file in the root of the project with the following contents:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>implementation-class=org.example.myplugin.MyJavaConventionPlugin</pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: org.example.greeting.GreetingPlugin</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>You must put the properties file in the directory <code>META-INF/gradle-plugins</code> as Gradle will try to resolve the file from that specific location in the plugin JAR. Now that your plugin has an identifier, you can replace</p>
+<p>You can now verify that your plugin is working by running its <code>hello</code> task in the root of the project:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: org.example.myplugin.MyJavaConventionPlugin</code></pre>
+<pre>$ gradle hello
+:buildSrc:compileJava
+:buildSrc:compileGroovy UP-TO-DATE
+:buildSrc:processResources UP-TO-DATE
+:buildSrc:classes
+:buildSrc:jar
+:buildSrc:assemble
+:buildSrc:compileTestJava UP-TO-DATE
+:buildSrc:compileTestGroovy UP-TO-DATE
+:buildSrc:processTestResources UP-TO-DATE
+:buildSrc:testClasses UP-TO-DATE
+:buildSrc:test UP-TO-DATE
+:buildSrc:check UP-TO-DATE
+:buildSrc:build
+:hello
+Hello World!</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>with</p>
+<p>As you can see from the output above, the files in <code>buildSrc</code> are treated as a Java project. This gets built first and then the classes inside that project become available in your main build, which is what runs the <code>hello</code> task.</p>
+</div>
+<div class="paragraph">
+<p>Your build is currently just using the default values for the greeting, hence why it prints out "Hello World!". This doesn&#8217;t have to be the case as the plugin pulls the greeting values from the extension it creates. All you have to do is provide your own values in the build script like so:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">plugins {
-    id <span class="string"><span class="delimiter">&quot;</span><span class="content">org.example.my-java</span><span class="delimiter">&quot;</span></span>
+<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: org.example.greeting.GreetingPlugin
+
+greeting {                                                       <i class="conum" data-value="1"></i><b>(1)</b>
+    name = <span class="string"><span class="delimiter">&quot;</span><span class="content">Gradle</span><span class="delimiter">&quot;</span></span>                                              <i class="conum" data-value="2"></i><b>(2)</b>
+    message = <span class="string"><span class="delimiter">&quot;</span><span class="content">Hi</span><span class="delimiter">&quot;</span></span>
 }</code></pre>
 </div>
 </div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Configures the extension named "greeting", which in this case is of type <code>GreetingExtension</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Sets the extension&#8217;s <code>name</code> property (via the <code>setName()</code> method) to "Gradle"</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now when you run the <code>hello</code> task, you&#8217;ll see the following - using <code>-q</code> to hide the <code>buildSrc</code> output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ gradle -q hello
+Hi Gradle!</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So extensions are a mechanism to introduce new model elements to the build script language. Note how the build author doesn&#8217;t need to explicitly configure any tasks themselves. [Learning opportunity on domain modelling and making the task configuration independent of the build script]</p>
+</div>
+<div class="paragraph">
+<p>This example is now functionally complete and you&#8217;ve seen it in action in the above build. Now you can take the opportunity to tidy up the build script by removing the rather ugly reference to the <code>GreetingPlugin</code> class.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="summary"><a class="anchor" href="#summary"></a>Summary</h2>
+<h2 id="_summary"><a class="anchor" href="#_summary"></a>Summary</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>~TODO: Write the summary!</p>
@@ -717,7 +764,7 @@ Use the Gradle <a href="https://docs.gradle.org/current/dsl/">DSL Reference</a> 
 </div>
 </div>
 <div class="sect1">
-<h2 id="next_steps"><a class="anchor" href="#next_steps"></a>Next steps</h2>
+<h2 id="_next_steps"><a class="anchor" href="#_next_steps"></a>Next steps</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -730,6 +777,9 @@ Use the Gradle <a href="https://docs.gradle.org/current/dsl/">DSL Reference</a> 
 <li>
 <p>Functionally test the plugin</p>
 </li>
+<li>
+<p>Add incremental build support for plugins that deal with files</p>
+</li>
 </ul>
 </div>
 </div>
@@ -737,7 +787,7 @@ Use the Gradle <a href="https://docs.gradle.org/current/dsl/">DSL Reference</a> 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-08 14:16:54 UTC
+Last updated 2016-09-13 17:08:33 BST
 </div>
 </div>
 </body>
