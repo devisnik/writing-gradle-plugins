@@ -515,13 +515,13 @@ table.CodeRay td.code>pre{padding:0}
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_what_you_ll_build">What you&#8217;ll build</a></li>
-<li><a href="#_what_you_ll_need">What you&#8217;ll need</a></li>
-<li><a href="#_create_a_project">Create a project</a></li>
-<li><a href="#_create_the_plugin">Create the plugin</a></li>
-<li><a href="#_use_the_plugin_in_the_main_project">Use the plugin in the main project</a></li>
-<li><a href="#_summary">Summary</a></li>
-<li><a href="#_next_steps">Next steps</a></li>
+<li><a href="#what_you_ll_build">What you&#8217;ll build</a></li>
+<li><a href="#what_you_ll_need">What you&#8217;ll need</a></li>
+<li><a href="#create_a_project">Create a project</a></li>
+<li><a href="#create_the_plugin">Create the plugin</a></li>
+<li><a href="#use_the_plugin_in_the_main_project">Use the plugin in the main project</a></li>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#next_steps">Next steps</a></li>
 </ul>
 </div>
 </div>
@@ -534,7 +534,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect1">
-<h2 id="_what_you_ll_build"><a class="anchor" href="#_what_you_ll_build"></a>What you&#8217;ll build</h2>
+<h2 id="what_you_ll_build"><a class="anchor" href="#what_you_ll_build"></a>What you&#8217;ll build</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>You&#8217;ll write a simple plugin class that applies some standard Java project configuration. You&#8217;ll then use that plugin for a simple Java build.</p>
@@ -542,7 +542,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect1">
-<h2 id="_what_you_ll_need"><a class="anchor" href="#_what_you_ll_need"></a>What you&#8217;ll need</h2>
+<h2 id="what_you_ll_need"><a class="anchor" href="#what_you_ll_need"></a>What you&#8217;ll need</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -563,7 +563,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect1">
-<h2 id="_create_a_project"><a class="anchor" href="#_create_a_project"></a>Create a project</h2>
+<h2 id="create_a_project"><a class="anchor" href="#create_a_project"></a>Create a project</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>You&#8217;ll need to create a directory for this plugin project and switch to it:</p>
@@ -588,7 +588,7 @@ $ cd greeting-plugin</pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_create_the_plugin"><a class="anchor" href="#_create_the_plugin"></a>Create the plugin</h2>
+<h2 id="create_the_plugin"><a class="anchor" href="#create_the_plugin"></a>Create the plugin</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Create the file <code>GreetingPlugin.java</code> in the <code>buildSrc/src/main/java/org/example/greeting</code> directory you just created. The contents of that file should be the following:</p>
@@ -607,8 +607,8 @@ $ cd greeting-plugin</pre>
 
         project.getTasks().create(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>, (task) -&gt; {                                  <i class="conum" data-value="2"></i><b>(2)</b>
             task.doLast((t) -&gt; {
-                GreetingExtension extension =
-                        (GreetingExtension) project.getExtensions().getByName(extensionName);
+                GreetingExtension extension = (GreetingExtension)
+                        project.getExtensions().getByName(extensionName);
                 <span class="predefined-type">String</span> msg = extension.getMessage() + <span class="string"><span class="delimiter">&quot;</span><span class="content"> </span><span class="delimiter">&quot;</span></span> + extension.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content">!</span><span class="delimiter">&quot;</span></span>;
                 <span class="predefined-type">System</span>.out.println(msg);
             });
@@ -677,7 +677,7 @@ Use the Gradle <a href="https://docs.gradle.org/current/dsl/">DSL Reference</a> 
 </div>
 </div>
 <div class="sect1">
-<h2 id="_use_the_plugin_in_the_main_project"><a class="anchor" href="#_use_the_plugin_in_the_main_project"></a>Use the plugin in the main project</h2>
+<h2 id="use_the_plugin_in_the_main_project"><a class="anchor" href="#use_the_plugin_in_the_main_project"></a>Use the plugin in the main project</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Create a <code>build.gradle</code> file in the root of the project with the following contents:</p>
@@ -756,7 +756,7 @@ Hi Gradle!</pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_summary"><a class="anchor" href="#_summary"></a>Summary</h2>
+<h2 id="summary"><a class="anchor" href="#summary"></a>Summary</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>~TODO: Write the summary!</p>
@@ -764,7 +764,7 @@ Hi Gradle!</pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_next_steps"><a class="anchor" href="#_next_steps"></a>Next steps</h2>
+<h2 id="next_steps"><a class="anchor" href="#next_steps"></a>Next steps</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -787,7 +787,7 @@ Hi Gradle!</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-13 17:08:33 BST
+Last updated 2016-09-13 17:18:41 BST
 </div>
 </div>
 </body>
