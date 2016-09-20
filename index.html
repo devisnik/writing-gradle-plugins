@@ -627,7 +627,7 @@ You will often want to publish the plugin so that it can be reused across multip
     <span class="directive">public</span> <span class="type">void</span> apply(Project project) {
         project.getTasks().create(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>, Greeting.class, (task) -&gt; {       <i class="conum" data-value="1"></i><b>(1)</b>
             task.setMessage(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello</span><span class="delimiter">&quot;</span></span>);
-            task.setName(<span class="string"><span class="delimiter">&quot;</span><span class="content">World</span><span class="delimiter">&quot;</span></span>);                                           <i class="conum" data-value="2"></i><b>(2)</b>
+            task.setRecipient(<span class="string"><span class="delimiter">&quot;</span><span class="content">World</span><span class="delimiter">&quot;</span></span>);                                      <i class="conum" data-value="2"></i><b>(2)</b>
         });
     }
 }</code></pre>
@@ -646,7 +646,7 @@ You will often want to publish the plugin so that it can be reused across multip
 </table>
 </div>
 <div class="paragraph">
-<p>The Gradle <code>Project</code> object is the entry point to the entire Gradle API and allows you to do anything you can do in a normal build script. In this case, you are creating a simple task called <code>hello</code> in the target project.</p>
+<p>This is the actual plugin and the Gradle <code>Project</code> object is your access point for the entire Gradle API, which allows you to do the same things as you can do in a build script. In this case, you are creating a simple task called <code>hello</code> in the target project.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -673,17 +673,17 @@ Use the Gradle <a href="https://docs.gradle.org/3.0/dsl/">DSL Reference</a> and 
 
 <span class="directive">public</span> <span class="type">class</span> <span class="class">Greeting</span> <span class="directive">extends</span> DefaultTask {
     <span class="directive">private</span> <span class="predefined-type">String</span> message;
-    <span class="directive">private</span> <span class="predefined-type">String</span> name;
+    <span class="directive">private</span> <span class="predefined-type">String</span> recipient;
 
     <span class="directive">public</span> <span class="predefined-type">String</span> getMessage() { <span class="keyword">return</span> message; }
     <span class="directive">public</span> <span class="type">void</span> setMessage(<span class="predefined-type">String</span> message) { <span class="local-variable">this</span>.message = message; }
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getName() { <span class="keyword">return</span> name; }
-    <span class="directive">public</span> <span class="type">void</span> setName(<span class="predefined-type">String</span> name) { <span class="local-variable">this</span>.name = name; }
+    <span class="directive">public</span> <span class="predefined-type">String</span> getRecipient() { <span class="keyword">return</span> recipient; }
+    <span class="directive">public</span> <span class="type">void</span> setRecipient(<span class="predefined-type">String</span> recipient) { <span class="local-variable">this</span>.recipient = recipient; }
 
     <span class="annotation">@TaskAction</span>
     <span class="type">void</span> sayGreeting() {
-        <span class="predefined-type">System</span>.out.printf(<span class="string"><span class="delimiter">&quot;</span><span class="content">%s, %s!</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>, getMessage(), getName());             <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="predefined-type">System</span>.out.printf(<span class="string"><span class="delimiter">&quot;</span><span class="content">%s, %s!</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>, getMessage(), getRecipient());             <i class="conum" data-value="1"></i><b>(1)</b>
     }
 }</code></pre>
 </div>
@@ -776,7 +776,7 @@ Hello, World!</pre>
 
 hello {                                                                      <i class="conum" data-value="1"></i><b>(1)</b>
     message = <span class="string"><span class="delimiter">&quot;</span><span class="content">Hi</span><span class="delimiter">&quot;</span></span>
-    name = <span class="string"><span class="delimiter">&quot;</span><span class="content">Gradle</span><span class="delimiter">&quot;</span></span>
+    recipient = <span class="string"><span class="delimiter">&quot;</span><span class="content">Gradle</span><span class="delimiter">&quot;</span></span>
 }</code></pre>
 </div>
 </div>
@@ -832,7 +832,7 @@ Hi, Gradle!</pre>
 <p>WARN: You must put the properties file in the directory <code>META-INF/gradle-plugins</code> as Gradle will try to resolve the file from that specific location in the plugin JAR.</p>
 </div>
 <div class="paragraph">
-<p>Now that your plugin has an identifier, you can replace the previous line for applying the plugin:</p>
+<p>Now that your plugin has an identifier, you can replace the following line of the build script:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -868,29 +868,48 @@ Always qualify the plugin name with a namespace that is unique to you instead of
 <h2 id="summary"><a class="anchor" href="#summary"></a>Summary</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>~TODO: Write the summary!</p>
+<p>You&#8217;re now done! You have successfully created a plugin and used it within a build. Along the way, you&#8217;ve learned how to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Put build logic into a plugin</p>
+</li>
+<li>
+<p>Use the <code>buildSrc</code> directory for a plugin&#8217;s classes</p>
+</li>
+<li>
+<p>Give the plugin an ID and apply it in a build script</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This guide focuses on the essence of what a plugin is, but most plugins are far more substantial in the features that they provide. The next section will guide you towards learning more about what plugins can do and how you should implement them.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="next_steps"><a class="anchor" href="#next_steps"></a>Next steps</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>If you want to take your plugin skills further, you should consider the following:</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p>Publish the plugin to plugin portal</p>
+<p><a href="https://docs.gradle.org/3.0/userguide/javaGradle_plugin.html">Using a helper plugin</a> to simplify plugin development</p>
 </li>
 <li>
-<p>Publish to private company repository</p>
+<p><a href="https://plugins.gradle.org/docs/submit">Publishing the plugin to the plugin portal</a></p>
 </li>
 <li>
-<p>Functionally test the plugin</p>
+<p><a href="https://docs.gradle.org/3.0/userguide/custom_plugins.html#sec:getting_input_from_the_build">Using extensions</a> to provide a user-friendly model for your build type</p>
 </li>
 <li>
-<p>Add incremental build support for plugins that deal with files</p>
+<p><a href="https://docs.gradle.org/3.0/userguide/test_kit.html">Testing the plugin</a></p>
 </li>
 <li>
-<p>~TODO: <a href="https://docs.gradle.org/3.0/userguide/userguide_single.html#custom_plugins" class="bare">https://docs.gradle.org/3.0/userguide/userguide_single.html#custom_plugins</a></p>
+<p><a href="https://docs.gradle.org/3.0/userguide/more_about_tasks.html#sec:up_to_date_checks">Adding incremental build</a> support to the plugin&#8217;s task types</p>
 </li>
 </ul>
 </div>
@@ -899,7 +918,7 @@ Always qualify the plugin name with a namespace that is unique to you instead of
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-20 10:43:39 BST
+Last updated 2016-09-20 12:42:10 UTC
 </div>
 </div>
 </body>
