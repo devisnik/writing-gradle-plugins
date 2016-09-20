@@ -520,6 +520,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#create_a_project">Create a project</a></li>
 <li><a href="#create_the_plugin">Create the plugin</a></li>
 <li><a href="#use_the_plugin_in_the_main_project">Use the plugin in the main project</a></li>
+<li><a href="#add_plugin_identifier">Add plugin identifier</a></li>
 <li><a href="#summary">Summary</a></li>
 <li><a href="#next_steps">Next steps</a></li>
 </ul>
@@ -529,7 +530,7 @@ table.CodeRay td.code>pre{padding:0}
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>This guide walks you through the process of creating reusable build logic in a Gradle plugin.</p>
+<p>This guide walks you through the process of creating reusable build logic in a Gradle plugin, which can then be applied to other Gradle builds.</p>
 </div>
 </div>
 </div>
@@ -537,7 +538,7 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="what_you_ll_build"><a class="anchor" href="#what_you_ll_build"></a>What you&#8217;ll build</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You&#8217;ll write a simple plugin <span class="line-through">class that applies some standard Java project configuration. You&#8217;ll then use that plugin for a simple Java build</span>.</p>
+<p>You&#8217;ll write a simple plugin that adds a new task type and creates a task of that type in whatever project its applied to. You will also prove that the plugin works and see its effect by applying the plugin to a build.</p>
 </div>
 </div>
 </div>
@@ -594,6 +595,18 @@ If you&#8217;d like to learn more about this <code>buildSrc</code> directory, yo
 </tr>
 </table>
 </div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You will often want to publish the plugin so that it can be reused across multiple builds. You can learn about the options to do just that in <a href="#next_steps">Next steps</a>.
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -609,20 +622,12 @@ If you&#8217;d like to learn more about this <code>buildSrc</code> directory, yo
 
 <span class="keyword">import</span> <span class="include">org.gradle.api.Plugin</span>;
 <span class="keyword">import</span> <span class="include">org.gradle.api.Project</span>;
-<span class="keyword">import</span> <span class="include">org.gradle.api.plugins.ExtensionContainer</span>;
 
 <span class="directive">public</span> <span class="type">class</span> <span class="class">GreetingPlugin</span> <span class="directive">implements</span> Plugin&lt;Project&gt; {
     <span class="directive">public</span> <span class="type">void</span> apply(Project project) {
-        <span class="directive">final</span> ExtensionContainer extensions = project.getExtensions();
-
-        extensions.create(<span class="string"><span class="delimiter">&quot;</span><span class="content">greeting</span><span class="delimiter">&quot;</span></span>, GreetingExtension.class);              <i class="conum" data-value="1"></i><b>(1)</b>
-
-        project.getTasks().create(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>, (task) -&gt; {                       <i class="conum" data-value="2"></i><b>(2)</b>
-            task.doLast((t) -&gt; {
-                GreetingExtension extension =
-                    (GreetingExtension) extensions.getByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">greeting</span><span class="delimiter">&quot;</span></span>);
-                <span class="predefined-type">System</span>.out.printf(<span class="string"><span class="delimiter">&quot;</span><span class="content">%s, %s!</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>, extension.getMessage(), extension.getName());
-            });
+        project.getTasks().create(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>, Greeting.class, (task) -&gt; {       <i class="conum" data-value="1"></i><b>(1)</b>
+            task.setMessage(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello</span><span class="delimiter">&quot;</span></span>);
+            task.setName(<span class="string"><span class="delimiter">&quot;</span><span class="content">World</span><span class="delimiter">&quot;</span></span>);                                           <i class="conum" data-value="2"></i><b>(2)</b>
         });
     }
 }</code></pre>
@@ -632,16 +637,16 @@ If you&#8217;d like to learn more about this <code>buildSrc</code> directory, yo
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Creates a new extension named <code>greeting</code> that can be configured in the build script</td>
+<td>Creates a new task named <code>hello</code> of type <code>Greeting</code> (which you will define shortly)</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Creates a new task named <code>hello</code> in the project that the plugin gets applied to</td>
+<td>Sets default values for the new task</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The Gradle <code>Project</code> object is the entry point to the entire Gradle API and allows you to do anything you can do in a normal build script. In this case, that involves creating an extension class, whose use you will see later when you apply the plugin, and creating a task.</p>
+<p>The Gradle <code>Project</code> object is the entry point to the entire Gradle API and allows you to do anything you can do in a normal build script. In this case, you are creating a simple task called <code>hello</code> in the target project.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -650,28 +655,36 @@ If you&#8217;d like to learn more about this <code>buildSrc</code> directory, yo
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Use the Gradle {dsl-ref}[DSL Reference] and {javadoc-ref}[Javadocs] to learn what you can do with the Gradle API. Start with the entry for {dsl-ref}org.gradle.api.Project.html[<code>Project</code>].
+Use the Gradle <a href="https://docs.gradle.org/3.0/dsl/">DSL Reference</a> and <a href="https://docs.gradle.org/3.0/javadocs/">Javadocs</a> to learn what you can do with the Gradle API. Start with the entry for <a href="https://docs.gradle.org/3.0/dsl/org.gradle.api.Project.html"><code>Project</code></a>. You can find out more about what you can achieve by also following the links in <a href="#next_steps">Next steps</a>.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Alongside that plugin source file, create another file called <code>GreetingExtension.java</code> and put the following in it:</p>
+<p>Next, you&#8217;ll create the class for the task type that the plugin is using. Create another file, called <code>Greeting.java</code>, in the same directory as <code>GreetingPlugin.java</code> and set its contents to the following:</p>
 </div>
 <div class="listingblock">
-<div class="title">buildSrc/src/main/java/org/example/greeting/GreetingExtension.java</div>
+<div class="title">buildSrc/src/main/java/org/example/greeting/Greeting.java</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">org.example.greeting</span>;
 
-<span class="directive">public</span> <span class="type">class</span> <span class="class">GreetingExtension</span> {
-    <span class="directive">private</span> <span class="predefined-type">String</span> message = <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello</span><span class="delimiter">&quot;</span></span>;                                        <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="directive">private</span> <span class="predefined-type">String</span> name = <span class="string"><span class="delimiter">&quot;</span><span class="content">World</span><span class="delimiter">&quot;</span></span>;                                           <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="keyword">import</span> <span class="include">org.gradle.api.DefaultTask</span>;
+<span class="keyword">import</span> <span class="include">org.gradle.api.tasks.TaskAction</span>;
+
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Greeting</span> <span class="directive">extends</span> DefaultTask {
+    <span class="directive">private</span> <span class="predefined-type">String</span> message;
+    <span class="directive">private</span> <span class="predefined-type">String</span> name;
 
     <span class="directive">public</span> <span class="predefined-type">String</span> getMessage() { <span class="keyword">return</span> message; }
     <span class="directive">public</span> <span class="type">void</span> setMessage(<span class="predefined-type">String</span> message) { <span class="local-variable">this</span>.message = message; }
 
     <span class="directive">public</span> <span class="predefined-type">String</span> getName() { <span class="keyword">return</span> name; }
     <span class="directive">public</span> <span class="type">void</span> setName(<span class="predefined-type">String</span> name) { <span class="local-variable">this</span>.name = name; }
+
+    <span class="annotation">@TaskAction</span>
+    <span class="type">void</span> sayGreeting() {
+        <span class="predefined-type">System</span>.out.printf(<span class="string"><span class="delimiter">&quot;</span><span class="content">%s, %s!</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>, getMessage(), getName());             <i class="conum" data-value="1"></i><b>(1)</b>
+    }
 }</code></pre>
 </div>
 </div>
@@ -679,12 +692,24 @@ Use the Gradle {dsl-ref}[DSL Reference] and {javadoc-ref}[Javadocs] to learn wha
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Sets default values for the extension&#8217;s properties</td>
+<td>Prints out the configured greeting when the task runs</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can learn more about creating your own task types in the <a href="https://docs.gradle.org/3.0/userguide/custom_tasks.html">User Manual</a>.
+</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>You now have a plugin, but a plugin alone doesn&#8217;t do anything. You need to apply it in another project.</p>
+<p>You now have a plugin, but a plugin alone doesn&#8217;t do anything. You need to apply it in another project for it to be useful, so we will show you how to do that next.</p>
 </div>
 </div>
 </div>
@@ -701,7 +726,22 @@ Use the Gradle {dsl-ref}[DSL Reference] and {javadoc-ref}[Javadocs] to learn wha
 </div>
 </div>
 <div class="paragraph">
-<p>You can now verify that your plugin is working by running its <code>hello</code> task in the root of the project:</p>
+<p>This applies your plugin to the main project, adding the <code>hello</code> task to the build.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The above syntax is all that&#8217;s required because the plugin source resides in the <code>buildSrc</code> directory. Applying other, non-core Gradle plugins requires other syntax as described in the <a href="https://docs.gradle.org/3.0/userguide/plugins.html#sec:binary_plugins">User Manual</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can now verify that your plugin is working by running its <code>hello</code> task in the main build:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -724,19 +764,19 @@ Hello, World!</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>As you can see from the output above, the files in <code>buildSrc</code> are treated as a Java project. This gets built first and then the classes inside that project become available in your main build, which is what runs the <code>hello</code> task.</p>
+<p>The bulk of the output reflects that the files in <code>buildSrc</code> are treated as a Java project, which needs to be built first. Once that happens, the classes inside that project become available in your main build and the main build can execute the task or tasks that you specified.</p>
 </div>
 <div class="paragraph">
-<p>Your build is currently just using the default values for the greeting, hence why it prints out "Hello, World!". This doesn&#8217;t have to be the case as the plugin pulls the greeting values from the extension it creates. All you have to do is provide your own values in the build script like so:</p>
+<p>Your build is currently just using the default values for the greeting, hence why it prints out "Hello, World!". This doesn&#8217;t have to be the case as you can configure the task directly in the build script:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: org.example.greeting.GreetingPlugin
 
-greeting {                                                       <i class="conum" data-value="1"></i><b>(1)</b>
+hello {                                                                      <i class="conum" data-value="1"></i><b>(1)</b>
     message = <span class="string"><span class="delimiter">&quot;</span><span class="content">Hi</span><span class="delimiter">&quot;</span></span>
-    name = <span class="string"><span class="delimiter">&quot;</span><span class="content">Gradle</span><span class="delimiter">&quot;</span></span>                                              <i class="conum" data-value="2"></i><b>(2)</b>
+    name = <span class="string"><span class="delimiter">&quot;</span><span class="content">Gradle</span><span class="delimiter">&quot;</span></span>
 }</code></pre>
 </div>
 </div>
@@ -744,11 +784,19 @@ greeting {                                                       <i class="conum
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Configures the extension named <code>greeting</code>, which in this case is of type <code>GreetingExtension</code></td>
+<td>Configures multiple properties of the task named <code>hello</code></td>
 </tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
 <tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Sets the extension&#8217;s <code>name</code> property (via the <code>setName()</code> method) to "Gradle"</td>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can learn more about the syntax for configuring tasks in the <a href="https://docs.gradle.org/3.0/userguide/more_about_tasks.html#sec:configuring_tasks">User Manual</a>.
+</td>
 </tr>
 </table>
 </div>
@@ -762,10 +810,57 @@ Hi, Gradle!</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>So extensions are a mechanism to introduce new model elements to the build script language. Note how the build author doesn&#8217;t need to explicitly configure any tasks themselves. [Learning opportunity on domain modeling and making the task configuration independent of the build script]</p>
+<p>Your plugin is now functionally complete and you&#8217;ve seen it in action in the above build. There is just one more thing we want to show you, which helps make the build script a bit tidier and also helps when it comes to publishing your plugin: adding a plugin identifier.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="add_plugin_identifier"><a class="anchor" href="#add_plugin_identifier"></a>Add plugin identifier</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Create a <code>buildSrc/src/main/resources/META-INF/gradle-plugins/org.example.greeting.properties</code> file that contains the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>implementation-class=org.example.greeting.GreetingPlugin</pre>
+</div>
 </div>
 <div class="paragraph">
-<p>This example is now functionally complete and you&#8217;ve seen it in action in the above build. <span class="line-through">Now you can take the opportunity to tidy up the build script by removing the rather ugly reference to the <code>GreetingPlugin</code> class</span>.</p>
+<p>Gradle uses this file to determine which class implements the <code>Plugin</code> interface. It also uses to the name of the file to determine the plugin&#8217;s string identifier.</p>
+</div>
+<div class="paragraph">
+<p>WARN: You must put the properties file in the directory <code>META-INF/gradle-plugins</code> as Gradle will try to resolve the file from that specific location in the plugin JAR.</p>
+</div>
+<div class="paragraph">
+<p>Now that your plugin has an identifier, you can replace the previous line for applying the plugin:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: org.example.greeting.GreetingPlugin</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>with one that uses the plugin ID:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">org.example.greeting</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note how the name of the properties file - <code>org.example.greeting.properties</code> - maps to the ID above.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Always qualify the plugin name with a namespace that is unique to you instead of the "org.example" used in this guide. Doing so helps avoid name clashes between plugins. You can find more details about plugin IDs in the <a href="https://docs.gradle.org/3.0/userguide/custom_plugins.html#sec:creating_a_plugin_id">User Manual</a>.
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
@@ -804,7 +899,7 @@ Hi, Gradle!</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-14 10:09:27 UTC
+Last updated 2016-09-20 10:43:39 BST
 </div>
 </div>
 </body>
