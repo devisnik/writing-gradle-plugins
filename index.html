@@ -625,9 +625,9 @@ You will often want to publish the plugin so that it can be reused across multip
 
 <span class="directive">public</span> <span class="type">class</span> <span class="class">GreetingPlugin</span> <span class="directive">implements</span> Plugin&lt;Project&gt; {
     <span class="directive">public</span> <span class="type">void</span> apply(Project project) {
-        project.getTasks().create(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>, Greeting.class, (task) -&gt; {       <i class="conum" data-value="1"></i><b>(1)</b>
+        project.getTasks().create(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>, Greeting.class, (task) -&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
             task.setMessage(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello</span><span class="delimiter">&quot;</span></span>);
-            task.setRecipient(<span class="string"><span class="delimiter">&quot;</span><span class="content">World</span><span class="delimiter">&quot;</span></span>);                                      <i class="conum" data-value="2"></i><b>(2)</b>
+            task.setRecipient(<span class="string"><span class="delimiter">&quot;</span><span class="content">World</span><span class="delimiter">&quot;</span></span>);                                <i class="conum" data-value="2"></i><b>(2)</b>
         });
     }
 }</code></pre>
@@ -683,7 +683,7 @@ Use the Gradle <a href="https://docs.gradle.org/3.0/dsl/">DSL Reference</a> and 
 
     <span class="annotation">@TaskAction</span>
     <span class="type">void</span> sayGreeting() {
-        <span class="predefined-type">System</span>.out.printf(<span class="string"><span class="delimiter">&quot;</span><span class="content">%s, %s!</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>, getMessage(), getRecipient());             <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="predefined-type">System</span>.out.printf(<span class="string"><span class="delimiter">&quot;</span><span class="content">%s, %s!</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>, getMessage(), getRecipient()); <i class="conum" data-value="1"></i><b>(1)</b>
     }
 }</code></pre>
 </div>
@@ -774,7 +774,7 @@ Hello, World!</pre>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: org.example.greeting.GreetingPlugin
 
-hello {                                                                      <i class="conum" data-value="1"></i><b>(1)</b>
+hello { <i class="conum" data-value="1"></i><b>(1)</b>
     message = <span class="string"><span class="delimiter">&quot;</span><span class="content">Hi</span><span class="delimiter">&quot;</span></span>
     recipient = <span class="string"><span class="delimiter">&quot;</span><span class="content">Gradle</span><span class="delimiter">&quot;</span></span>
 }</code></pre>
@@ -918,7 +918,7 @@ Always qualify the plugin name with a namespace that is unique to you instead of
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-20 12:42:10 UTC
+Last updated 2016-09-21 14:58:13 UTC
 </div>
 </div>
 </body>
