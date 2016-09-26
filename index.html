@@ -520,7 +520,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#create_a_project">Create a project</a></li>
 <li><a href="#create_the_plugin">Create the plugin</a></li>
 <li><a href="#use_the_plugin_in_the_main_project">Use the plugin in the main project</a></li>
-<li><a href="#add_plugin_identifier">Add plugin identifier</a></li>
+<li><a href="#declare_a_plugin_identifier">Declare a plugin identifier</a></li>
 <li><a href="#summary">Summary</a></li>
 <li><a href="#next_steps">Next steps</a></li>
 </ul>
@@ -531,6 +531,15 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sectionbody">
 <div class="paragraph">
 <p>This guide walks you through the process of creating reusable build logic in a Gradle plugin, which can then be applied to other Gradle builds.</p>
+</div>
+<div class="paragraph">
+<p><strong>Option 1</strong> The core of Gradle provides an infrastructure for building anything, but plugins are what allow build users to get things done with a minimum of effort. They can apply conventions, add new task types, integrate with third-party tools and libraries, and more. This guide focuses on the most basic of plugins, but it represents the tip of the iceberg.</p>
+</div>
+<div class="paragraph">
+<p><strong>Option 2</strong> Almost every Gradle build uses plugins. Why is that? The Gradle core is agnostic about specific types of build, and so plugins are needed to provide the features you need for your specific builds. They solve specific problems and needs so that you can build your projects with a minimum of effort. This guide focuses on the most basic of plugins, but it really is just the tip of the iceberg.</p>
+</div>
+<div class="paragraph">
+<p><strong>Option 3</strong> Everywhere you look, Gradle builds apply one or more plugins. Why? The Gradle core is flexible enough to build anything, but that flexibility means work for you. Unless you use plugins. They provide features, conventions, and more, reducing the amount of work you need to build <em>your</em> projects. They&#8217;re like a Pick 'n Mix store for Gradle authors.</p>
 </div>
 </div>
 </div>
@@ -613,7 +622,7 @@ You will often want to publish the plugin so that it can be reused across multip
 <h2 id="create_the_plugin"><a class="anchor" href="#create_the_plugin"></a>Create the plugin</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Create the file <code>GreetingPlugin.java</code> in the <code>buildSrc/src/main/java/org/example/greeting</code> directory you just created. The contents of that file should be the following:</p>
+<p>Create the class <code>GreetingPlugin</code> in the directory you just created, setting its contents to the following:</p>
 </div>
 <div class="listingblock">
 <div class="title">buildSrc/src/main/java/org/example/greeting/GreetingPlugin.java</div>
@@ -661,7 +670,7 @@ Use the Gradle <a href="https://docs.gradle.org/3.0/dsl/">DSL Reference</a> and 
 </table>
 </div>
 <div class="paragraph">
-<p>Next, you&#8217;ll create the class for the task type that the plugin is using. Create another file, called <code>Greeting.java</code>, in the same directory as <code>GreetingPlugin.java</code> and set its contents to the following:</p>
+<p>Next, you&#8217;ll create the class for the task type that the plugin is using. Add a new <code>Greeting</code> class in the same package as the plugin:</p>
 </div>
 <div class="listingblock">
 <div class="title">buildSrc/src/main/java/org/example/greeting/Greeting.java</div>
@@ -801,7 +810,7 @@ You can learn more about the syntax for configuring tasks in the <a href="https:
 </table>
 </div>
 <div class="paragraph">
-<p>Now when you run the <code>hello</code> task, you&#8217;ll see the following - using <code>-q</code> to hide the <code>buildSrc</code> output:</p>
+<p>Now when you run the <code>hello</code> task&#8201;&#8212;&#8201;using <code>-q</code> to hide the <code>buildSrc</code> output this time&#8201;&#8212;&#8201;you&#8217;ll see the following:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -815,12 +824,16 @@ Hi, Gradle!</pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="add_plugin_identifier"><a class="anchor" href="#add_plugin_identifier"></a>Add plugin identifier</h2>
+<h2 id="declare_a_plugin_identifier"><a class="anchor" href="#declare_a_plugin_identifier"></a>Declare a plugin identifier</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Create a <code>buildSrc/src/main/resources/META-INF/gradle-plugins/org.example.greeting.properties</code> file that contains the following:</p>
+<p>In most cases, you apply plugins using an ID because they are easier to remember than fully-qualified class names. They also result in tidier build files. So it makes sense to ensure that your own plugin can also be applied in the same way, which is why you will now declare an identifier for the plugin.</p>
+</div>
+<div class="paragraph">
+<p>Create the following properties file:</p>
 </div>
 <div class="listingblock">
+<div class="title">buildSrc/src/main/resources/META-INF/gradle-plugins/org.example.greeting.properties</div>
 <div class="content">
 <pre>implementation-class=org.example.greeting.GreetingPlugin</pre>
 </div>
@@ -828,11 +841,20 @@ Hi, Gradle!</pre>
 <div class="paragraph">
 <p>Gradle uses this file to determine which class implements the <code>Plugin</code> interface. It also uses to the name of the file to determine the plugin&#8217;s string identifier.</p>
 </div>
-<div class="paragraph">
-<p>WARN: You must put the properties file in the directory <code>META-INF/gradle-plugins</code> as Gradle will try to resolve the file from that specific location in the plugin JAR.</p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+You must put the properties file in the directory <code>META-INF/gradle-plugins</code> as Gradle will try to resolve the file from that specific location in the plugin JAR.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>Now that your plugin has an identifier, you can replace the following line of the build script:</p>
+<p>That&#8217;s all you need to do in your plugin, so now you can replace the following line of the build script:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -848,7 +870,7 @@ Hi, Gradle!</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Note how the name of the properties file - <code>org.example.greeting.properties</code> - maps to the ID above.</p>
+<p>Note how the name of the properties file&#8201;&#8212;&#8201;<code>org.example.greeting.properties</code>&#8201;&#8212;&#8201;maps to the ID above.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -892,24 +914,24 @@ Always qualify the plugin name with a namespace that is unique to you instead of
 <h2 id="next_steps"><a class="anchor" href="#next_steps"></a>Next steps</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>If you want to take your plugin skills further, you should consider the following:</p>
+<p>Now that you&#8217;re familiar with the basics of building Gradle plugins, you may be interested in:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://docs.gradle.org/3.0/userguide/javaGradle_plugin.html">Using a helper plugin</a> to simplify plugin development</p>
+<p><a href="https://docs.gradle.org/3.0/userguide/javaGradle_plugin.html">Simplifying plugin development with the Java Gradle Plugin Development Plugin</a></p>
 </li>
 <li>
-<p><a href="https://plugins.gradle.org/docs/submit">Publishing the plugin to the plugin portal</a></p>
+<p><a href="https://plugins.gradle.org/docs/submit">Publishing plugins to the Gradle Plugin Portal</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/3.0/userguide/custom_plugins.html#sec:getting_input_from_the_build">Using extensions</a> to provide a user-friendly model for your build type</p>
+<p><a href="https://docs.gradle.org/3.0/userguide/custom_plugins.html#sec:getting_input_from_the_build">Modeling your domain with extensions</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/3.0/userguide/test_kit.html">Testing the plugin</a></p>
+<p><a href="https://docs.gradle.org/3.0/userguide/test_kit.html">Testing plugins</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/3.0/userguide/more_about_tasks.html#sec:up_to_date_checks">Adding incremental build</a> support to the plugin&#8217;s task types</p>
+<p><a href="https://docs.gradle.org/3.0/userguide/more_about_tasks.html#sec:up_to_date_checks">Adding incremental build support to new task types</a></p>
 </li>
 </ul>
 </div>
@@ -918,7 +940,7 @@ Always qualify the plugin name with a namespace that is unique to you instead of
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-21 14:58:13 UTC
+Last updated 2016-09-26 10:11:00 UTC
 </div>
 </div>
 </body>
