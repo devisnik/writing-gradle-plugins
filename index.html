@@ -55,7 +55,7 @@
    <div id="preamble"> 
     <div class="sectionbody"> 
      <div class="paragraph"> 
-      <p>This guide walks you through the process of creating reusable build logic in a Gradle plugin, which can then be applied to other Gradle builds. The core of Gradle provides an infrastructure for building anything, but plugins are what allow build users to get things done with a minimum of effort. They can apply conventions, add new task types, integrate with third-party tools and libraries, and more. This guide focuses on the most basic of plugins, but it represents the tip of the iceberg.</p> 
+      <p>This guide walks you through the process of creating reusable build logic in a Gradle plugin, which can then be applied to other Gradle builds. The core of Gradle provides an infrastructure for building anything, but plugins are what allow build script authors to get things done with a minimum of effort, allowing them to focus on <strong>what to build</strong>, rather than <strong>how to build</strong>. Plugins can apply conventions, add new task types, integrate with third-party tools and libraries, and more. For instance, the <code>java</code> plugin provides standard source directory layouts and tasks such as <code>compileJava</code> and <code>compileTestJava</code>. This guide focuses on the most basic of plugins, but represents the tip of the iceberg.</p> 
      </div> 
     </div> 
    </div> 
@@ -170,7 +170,7 @@ $ cd greeting-plugin</pre>
        <tbody>
         <tr> 
          <td class="icon"> <i class="fa icon-tip" title="Tip"></i> </td> 
-         <td class="content"> Use the Gradle <a href="https://docs.gradle.org/3.4.1/dsl/">DSL Reference</a> and {javadocs}[Javadocs] to learn what you can do with the Gradle API. Start with the entry for <a href="https://docs.gradle.org/3.4.1/dsl/org.gradle.api.Project.html"><code>Project</code></a>. You can find out more about what you can achieve by also following the links in <a href="#next_steps">Next steps</a>. </td> 
+         <td class="content"> Use the Gradle <a href="https://docs.gradle.org/3.4.1/dsl/">DSL Reference</a> and <a href="https://docs.gradle.org/3.4.1/javadoc/">Javadocs</a> to learn what you can do with the Gradle API. Start with the entry for <a href="https://docs.gradle.org/3.4.1/dsl/org.gradle.api.Project.html"><code>Project</code></a>. You can find out more about what you can achieve by also following the links in <a href="#next_steps">Next steps</a>. </td> 
         </tr> 
        </tbody>
       </table> 
@@ -428,7 +428,7 @@ Hi, Gradle!</pre>
      <div class="ulist"> 
       <ul> 
        <li> <p><a href="https://docs.gradle.org/3.4.1/userguide/javaGradle_plugin.html">Simplifying plugin development with the Java Gradle Plugin Development Plugin</a></p> </li> 
-       <li> <p><a href="https://plugins.gradle.org/docs/submit">Publishing plugins to the Gradle Plugin Portal</a></p> </li> 
+       <li> <p><a href="https://guides.gradle.org/publishing-plugins-to-gradle-plugin-portal/">Publishing plugins to the Gradle Plugin Portal</a></p> </li> 
        <li> <p><a href="https://docs.gradle.org/3.4.1/userguide/custom_plugins.html#sec:getting_input_from_the_build">Modeling your domain with extensions</a></p> </li> 
        <li> <p><a href="https://docs.gradle.org/3.4.1/userguide/test_kit.html">Testing plugins</a></p> </li> 
        <li> <p><a href="https://docs.gradle.org/3.4.1/userguide/more_about_tasks.html#sec:up_to_date_checks">Adding incremental build support to new task types</a></p> </li> 
@@ -439,7 +439,7 @@ Hi, Gradle!</pre>
   </div> 
   <div id="footer"> 
    <div id="footer-text">
-     Last updated 2017-03-22 08:23:30 UTC 
+     Last updated 2017-04-20 07:31:06 UTC 
    </div> 
   </div>  
  </body>
