@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.3">
-<meta name="author" content="Peter Ledbrook">
+<meta name="author" content="Peter Ledbrook, Schalk Cronjé">
 <title>Writing Gradle Plugins</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="./coderay-asciidoctor.css">
@@ -35,7 +35,7 @@
 <body class="article toc2 toc-right">
 <div id="header"><div style="padding-top: 10px;"><a href="https://guides.gradle.org"><img src="https://guides.gradle.org/gradle-guides.svg" alt=""></a></div><h1>Writing Gradle Plugins</h1>
 <div class="details">
-<span id="author" class="author">Peter Ledbrook</span><br>
+<span id="author" class="author">Peter Ledbrook, Schalk Cronjé</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -95,7 +95,7 @@
 <div class="paragraph">
 <p>You&#8217;ll need to create a directory for this plugin project and switch to it:</p>
 </div>
-<div class="literalblock">
+<div class="listingblock terminal">
 <div class="content">
 <pre>$ mkdir greeting-plugin
 $ cd greeting-plugin</pre>
@@ -104,7 +104,7 @@ $ cd greeting-plugin</pre>
 <div class="paragraph">
 <p>Next, you will create a special directory structure for the plugin code:</p>
 </div>
-<div class="literalblock">
+<div class="listingblock terminal">
 <div class="content">
 <pre>$ mkdir -p buildSrc/src/main/java/org/example/greeting</pre>
 </div>
@@ -303,9 +303,7 @@ Hello, World!</pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: org.example.greeting.GreetingPlugin
-
-hello { <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="CodeRay highlight"><code data-lang="groovy">hello { <i class="conum" data-value="1"></i><b>(1)</b>
     message = <span class="string"><span class="delimiter">&quot;</span><span class="content">Hi</span><span class="delimiter">&quot;</span></span>
     recipient = <span class="string"><span class="delimiter">&quot;</span><span class="content">Gradle</span><span class="delimiter">&quot;</span></span>
 }</code></pre>
@@ -380,7 +378,7 @@ You must put the properties file in the directory <code>META-INF/gradle-plugins<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: org.example.greeting.GreetingPlugin</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: org.example.greeting.GreetingPlugin <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -388,7 +386,7 @@ You must put the properties file in the directory <code>META-INF/gradle-plugins<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">org.example.greeting</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">apply plugin : <span class="string"><span class="delimiter">'</span><span class="content">org.example.greeting</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -470,7 +468,7 @@ Always qualify the plugin name with a namespace that is unique to you instead of
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-07-12 12:51:04 UTC
+Last updated 2017-07-30 16:35:43 UTC
 </div>
 </div>
 </body>
