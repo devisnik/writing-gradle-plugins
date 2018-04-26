@@ -3,14 +3,14 @@
 <head><link crossorigin href="//assets.gradle.com" rel="preconnect">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,400i">
 <link rel="stylesheet" href="https://guides.gradle.org/css/asciidoctor.css">
-<link rel="stylesheet" href="https://guides.gradle.org/css/docs-blue-theme-4.5.2.css">
+<link rel="stylesheet" href="https://guides.gradle.org/css/docs-blue-theme-4.7.css">
 <link rel="apple-touch-icon" sizes="180x180" href="https://guides.gradle.org/icon/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="https://guides.gradle.org/icon/favicon-32x32.png" sizes="32x32">
 <link rel="icon" type="image/png" href="https://guides.gradle.org/icon/favicon-16x16.png" sizes="16x16">
 <link rel="manifest" href="https://guides.gradle.org/icon/manifest.json">
 <link rel="mask-icon" href="https://guides.gradle.org/icon/safari-pinned-tab.svg" color="#5bbad5">
 <link rel="shortcut icon" href="https://guides.gradle.org/icon/favicon.ico">
-<script defer src="https://guides.gradle.org/js/guides.js"></script>
+<script defer src="https://guides.gradle.org/js/guides-4.7.js"></script>
 <script defer src="https://guides.gradle.org/js/set-time-to-complete-text.js"></script>
 <script async src="https://guides.gradle.org/js/autotrack.js"></script>
 
@@ -21,7 +21,6 @@
 <meta name="author" content="Peter Ledbrook, Schalk Cronjé">
 <title>Writing Gradle Plugins</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
-<link rel="stylesheet" href="./coderay-asciidoctor.css">
 </head>
 <body class="article">
 <header class="site-layout__header site-header" itemscope="itemscope" itemtype="https://schema.org/WPHeader">
@@ -133,7 +132,7 @@
 <p>A <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Development Kit</a> (JDK), version 1.8 or better</p>
 </li>
 <li>
-<p>A <a href="https://gradle.org/install">Gradle distribution</a>, version 4.6 or better</p>
+<p>A <a href="https://gradle.org/install">Gradle distribution</a>, version 4.7 or better</p>
 </li>
 </ul>
 </div>
@@ -166,7 +165,7 @@ $ cd greeting-plugin</pre>
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-If you&#8217;d like to learn more about this <code>buildSrc</code> directory, you can read about how it allows you to organize your build logic <a href="https://docs.gradle.org/4.6/userguide/organizing_build_logic.html#sec:build_sources">in the User Manual</a>.
+If you&#8217;d like to learn more about this <code>buildSrc</code> directory, you can read about how it allows you to organize your build logic <a href="https://docs.gradle.org/4.7/userguide/organizing_build_logic.html#sec:build_sources">in the User Manual</a>.
 </td>
 </tr>
 </table>
@@ -194,16 +193,16 @@ You will often want to publish the plugin so that it can be reused across multip
 <div class="listingblock">
 <div class="title">buildSrc/src/main/java/org/example/greeting/GreetingPlugin.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">org.example.greeting</span>;
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">package org.example.greeting;
 
-<span class="keyword">import</span> <span class="include">org.gradle.api.Plugin</span>;
-<span class="keyword">import</span> <span class="include">org.gradle.api.Project</span>;
+import org.gradle.api.Plugin;
+import org.gradle.api.Project;
 
-<span class="directive">public</span> <span class="type">class</span> <span class="class">GreetingPlugin</span> <span class="directive">implements</span> Plugin&lt;Project&gt; {
-    <span class="directive">public</span> <span class="type">void</span> apply(Project project) {
-        project.getTasks().create(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>, Greeting.class, (task) -&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
-            task.setMessage(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello</span><span class="delimiter">&quot;</span></span>);
-            task.setRecipient(<span class="string"><span class="delimiter">&quot;</span><span class="content">World</span><span class="delimiter">&quot;</span></span>);                                <i class="conum" data-value="2"></i><b>(2)</b>
+public class GreetingPlugin implements Plugin&lt;Project&gt; {
+    public void apply(Project project) {
+        project.getTasks().create("hello", Greeting.class, (task) -&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+            task.setMessage("Hello");
+            task.setRecipient("World");                                <i class="conum" data-value="2"></i><b>(2)</b>
         });
     }
 }</code></pre>
@@ -231,7 +230,7 @@ You will often want to publish the plugin so that it can be reused across multip
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Use the Gradle <a href="https://docs.gradle.org/4.6/dsl/">DSL Reference</a> and <a href="https://docs.gradle.org/4.6/javadoc/">Javadocs</a> to learn what you can do with the Gradle API. Start with the entry for <a href="https://docs.gradle.org/4.6/dsl/org.gradle.api.Project.html"><code>Project</code></a>. You can find out more about what you can achieve by also following the links in <a href="#next_steps">Next steps</a>.
+Use the Gradle <a href="https://docs.gradle.org/4.7/dsl/">DSL Reference</a> and <a href="https://docs.gradle.org/4.7/javadoc/">Javadocs</a> to learn what you can do with the Gradle API. Start with the entry for <a href="https://docs.gradle.org/4.7/dsl/org.gradle.api.Project.html"><code>Project</code></a>. You can find out more about what you can achieve by also following the links in <a href="#next_steps">Next steps</a>.
 </td>
 </tr>
 </table>
@@ -242,24 +241,24 @@ Use the Gradle <a href="https://docs.gradle.org/4.6/dsl/">DSL Reference</a> and 
 <div class="listingblock">
 <div class="title">buildSrc/src/main/java/org/example/greeting/Greeting.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">org.example.greeting</span>;
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">package org.example.greeting;
 
-<span class="keyword">import</span> <span class="include">org.gradle.api.DefaultTask</span>;
-<span class="keyword">import</span> <span class="include">org.gradle.api.tasks.TaskAction</span>;
+import org.gradle.api.DefaultTask;
+import org.gradle.api.tasks.TaskAction;
 
-<span class="directive">public</span> <span class="type">class</span> <span class="class">Greeting</span> <span class="directive">extends</span> DefaultTask {
-    <span class="directive">private</span> <span class="predefined-type">String</span> message;
-    <span class="directive">private</span> <span class="predefined-type">String</span> recipient;
+public class Greeting extends DefaultTask {
+    private String message;
+    private String recipient;
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getMessage() { <span class="keyword">return</span> message; }
-    <span class="directive">public</span> <span class="type">void</span> setMessage(<span class="predefined-type">String</span> message) { <span class="local-variable">this</span>.message = message; }
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getRecipient() { <span class="keyword">return</span> recipient; }
-    <span class="directive">public</span> <span class="type">void</span> setRecipient(<span class="predefined-type">String</span> recipient) { <span class="local-variable">this</span>.recipient = recipient; }
+    public String getRecipient() { return recipient; }
+    public void setRecipient(String recipient) { this.recipient = recipient; }
 
-    <span class="annotation">@TaskAction</span>
-    <span class="type">void</span> sayGreeting() {
-        <span class="predefined-type">System</span>.out.printf(<span class="string"><span class="delimiter">&quot;</span><span class="content">%s, %s!</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>, getMessage(), getRecipient()); <i class="conum" data-value="1"></i><b>(1)</b>
+    @TaskAction
+    void sayGreeting() {
+        System.out.printf("%s, %s!\n", getMessage(), getRecipient()); <i class="conum" data-value="1"></i><b>(1)</b>
     }
 }</code></pre>
 </div>
@@ -279,7 +278,7 @@ Use the Gradle <a href="https://docs.gradle.org/4.6/dsl/">DSL Reference</a> and 
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-You can learn more about creating your own task types in the <a href="https://docs.gradle.org/4.6/userguide/custom_tasks.html">User Manual</a>.
+You can learn more about creating your own task types in the <a href="https://docs.gradle.org/4.7/userguide/custom_tasks.html">User Manual</a>.
 </td>
 </tr>
 </table>
@@ -298,7 +297,7 @@ You can learn more about creating your own task types in the <a href="https://do
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: org.example.greeting.GreetingPlugin <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">apply plugin: org.example.greeting.GreetingPlugin <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -316,7 +315,7 @@ You can learn more about creating your own task types in the <a href="https://do
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-The above syntax is all that&#8217;s required because the plugin source resides in the <code>buildSrc</code> directory. Applying other, non-core Gradle plugins requires other syntax as described in the <a href="https://docs.gradle.org/4.6/userguide/plugins.html#sec:binary_plugins">User Manual</a>.
+The above syntax is all that&#8217;s required because the plugin source resides in the <code>buildSrc</code> directory. Applying other, non-core Gradle plugins requires other syntax as described in the <a href="https://docs.gradle.org/4.7/userguide/plugins.html#sec:binary_plugins">User Manual</a>.
 </td>
 </tr>
 </table>
@@ -353,9 +352,9 @@ Hello, World!</pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">hello { <i class="conum" data-value="1"></i><b>(1)</b>
-    message = <span class="string"><span class="delimiter">&quot;</span><span class="content">Hi</span><span class="delimiter">&quot;</span></span>
-    recipient = <span class="string"><span class="delimiter">&quot;</span><span class="content">Gradle</span><span class="delimiter">&quot;</span></span>
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">hello { <i class="conum" data-value="1"></i><b>(1)</b>
+    message = "Hi"
+    recipient = "Gradle"
 }</code></pre>
 </div>
 </div>
@@ -374,7 +373,7 @@ Hello, World!</pre>
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-You can learn more about the syntax for configuring tasks in the <a href="https://docs.gradle.org/4.6/userguide/more_about_tasks.html#sec:configuring_tasks">User Manual</a>.
+You can learn more about the syntax for configuring tasks in the <a href="https://docs.gradle.org/4.7/userguide/more_about_tasks.html#sec:configuring_tasks">User Manual</a>.
 </td>
 </tr>
 </table>
@@ -428,7 +427,7 @@ You must put the properties file in the directory <code>META-INF/gradle-plugins<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: org.example.greeting.GreetingPlugin <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">apply plugin: org.example.greeting.GreetingPlugin <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -436,7 +435,7 @@ You must put the properties file in the directory <code>META-INF/gradle-plugins<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply plugin : <span class="string"><span class="delimiter">'</span><span class="content">org.example.greeting</span><span class="delimiter">'</span></span></code></pre>
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">apply plugin : 'org.example.greeting'</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -449,7 +448,7 @@ You must put the properties file in the directory <code>META-INF/gradle-plugins<
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Always qualify the plugin name with a namespace that is unique to you instead of the "org.example" used in this guide. Doing so helps avoid name clashes between plugins. You can find more details about plugin IDs in the <a href="https://docs.gradle.org/4.6/userguide/custom_plugins.html#sec:creating_a_plugin_id">User Manual</a>.
+Always qualify the plugin name with a namespace that is unique to you instead of the "org.example" used in this guide. Doing so helps avoid name clashes between plugins. You can find more details about plugin IDs in the <a href="https://docs.gradle.org/4.7/userguide/custom_plugins.html#sec:creating_a_plugin_id">User Manual</a>.
 </td>
 </tr>
 </table>
@@ -489,19 +488,19 @@ Always qualify the plugin name with a namespace that is unique to you instead of
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://docs.gradle.org/4.6/userguide/java_gradle_plugin.html">Simplifying plugin development with the Java Gradle Plugin Development Plugin</a></p>
+<p><a href="https://docs.gradle.org/4.7/userguide/java_gradle_plugin.html">Simplifying plugin development with the Java Gradle Plugin Development Plugin</a></p>
 </li>
 <li>
 <p><a href="https://guides.gradle.org/publishing-plugins-to-gradle-plugin-portal/">Publishing plugins to the Gradle Plugin Portal</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/4.6/userguide/custom_plugins.html#sec:getting_input_from_the_build">Modeling your domain with extensions</a></p>
+<p><a href="https://docs.gradle.org/4.7/userguide/custom_plugins.html#sec:getting_input_from_the_build">Modeling your domain with extensions</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/4.6/userguide/test_kit.html">Testing plugins</a></p>
+<p><a href="https://docs.gradle.org/4.7/userguide/test_kit.html">Testing plugins</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/4.6/userguide/more_about_tasks.html#sec:up_to_date_checks">Adding incremental build support to new task types</a></p>
+<p><a href="https://docs.gradle.org/4.7/userguide/more_about_tasks.html#sec:up_to_date_checks">Adding incremental build support to new task types</a></p>
 </li>
 </ul>
 </div>
@@ -516,6 +515,9 @@ Always qualify the plugin name with a namespace that is unique to you instead of
 </div>
 </div>
 </div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"></script>
+<script>prettyPrint()</script>
 <footer class="site-layout__footer site-footer" itemscope="itemscope" itemtype="https://schema.org/WPFooter">
     <nav class="site-footer__navigation" itemtype="https://schema.org/SiteNavigationElement">
         <section class="site-footer__links">
