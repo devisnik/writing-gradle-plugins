@@ -213,7 +213,7 @@
 <p>A <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Development Kit</a> (JDK), version 1.8 or better</p>
 </li>
 <li>
-<p>A <a href="https://gradle.org/install">Gradle distribution</a>, version 4.7 or better</p>
+<p>A <a href="https://gradle.org/install">Gradle distribution</a>, version 4.8 or better</p>
 </li>
 </ul>
 </div>
@@ -246,7 +246,7 @@ $ cd greeting-plugin</pre>
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-If you&#8217;d like to learn more about this <code>buildSrc</code> directory, you can read about how it allows you to organize your build logic <a href="https://docs.gradle.org/4.7/userguide/organizing_build_logic.html#sec:build_sources">in the User Manual</a>.
+If you&#8217;d like to learn more about this <code>buildSrc</code> directory, you can read about how it allows you to organize your build logic <a href="https://docs.gradle.org/4.8/userguide/organizing_gradle_projects.html#sec:build_sources">in the User Manual</a>.
 </td>
 </tr>
 </table>
@@ -311,7 +311,7 @@ public class GreetingPlugin implements Plugin&lt;Project&gt; {
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Use the Gradle <a href="https://docs.gradle.org/4.7/dsl/">DSL Reference</a> and <a href="https://docs.gradle.org/4.7/javadoc/">Javadocs</a> to learn what you can do with the Gradle API. Start with the entry for <a href="https://docs.gradle.org/4.7/dsl/org.gradle.api.Project.html"><code>Project</code></a>. You can find out more about what you can achieve by also following the links in <a href="#next_steps">Next steps</a>.
+Use the Gradle <a href="https://docs.gradle.org/4.8/dsl/">DSL Reference</a> and <a href="https://docs.gradle.org/4.8/javadoc/">Javadocs</a> to learn what you can do with the Gradle API. Start with the entry for <a href="https://docs.gradle.org/4.8/dsl/org.gradle.api.Project.html"><code>Project</code></a>. You can find out more about what you can achieve by also following the links in <a href="#next_steps">Next steps</a>.
 </td>
 </tr>
 </table>
@@ -359,7 +359,7 @@ public class Greeting extends DefaultTask {
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-You can learn more about creating your own task types in the <a href="https://docs.gradle.org/4.7/userguide/custom_tasks.html">User Manual</a>.
+You can learn more about creating your own task types in the <a href="https://docs.gradle.org/4.8/userguide/custom_tasks.html">User Manual</a>.
 </td>
 </tr>
 </table>
@@ -373,12 +373,18 @@ You can learn more about creating your own task types in the <a href="https://do
 <h2 id="use_the_plugin_in_the_main_project"><a class="anchor" href="#use_the_plugin_in_the_main_project"></a><a class="link" href="#use_the_plugin_in_the_main_project">Use the plugin in the main project</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Create a <code>build.gradle</code> file in the root of the project with the following contents:</p>
+<p>Create a build script file in the root of the project with the following contents:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock multi-language-sample">
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">apply plugin: org.example.greeting.GreetingPlugin <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">build.gradle.kts</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-kotlin" data-lang="kotlin">apply&lt;org.example.greeting.GreetingPlugin&gt;() <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -396,7 +402,7 @@ You can learn more about creating your own task types in the <a href="https://do
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-The above syntax is all that&#8217;s required because the plugin source resides in the <code>buildSrc</code> directory. Applying other, non-core Gradle plugins requires other syntax as described in the <a href="https://docs.gradle.org/4.7/userguide/plugins.html#sec:binary_plugins">User Manual</a>.
+The above syntax is all that&#8217;s required because the plugin source resides in the <code>buildSrc</code> directory. Applying other, non-core Gradle plugins requires other syntax as described in the <a href="https://docs.gradle.org/4.8/userguide/plugins.html#sec:binary_plugins">User Manual</a>.
 </td>
 </tr>
 </table>
@@ -430,10 +436,21 @@ Hello, World!</pre>
 <div class="paragraph">
 <p>Your build is currently just using the default property values for the greeting, hence why it prints out "Hello, World!". This doesn&#8217;t have to be the case as you can configure the task directly in the build script:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock multi-language-sample">
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">hello { <i class="conum" data-value="1"></i><b>(1)</b>
+    message = "Hi"
+    recipient = "Gradle"
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">build.gradle.kts</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-kotlin" data-lang="kotlin">import org.example.greeting.Greeting
+
+tasks.getByName&lt;Greeting&gt;("hello") { <i class="conum" data-value="1"></i><b>(1)</b>
     message = "Hi"
     recipient = "Gradle"
 }</code></pre>
@@ -454,7 +471,7 @@ Hello, World!</pre>
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-You can learn more about the syntax for configuring tasks in the <a href="https://docs.gradle.org/4.7/userguide/more_about_tasks.html#sec:configuring_tasks">User Manual</a>.
+You can learn more about the syntax for configuring tasks in the <a href="https://docs.gradle.org/4.8/userguide/more_about_tasks.html#sec:configuring_tasks">User Manual</a>.
 </td>
 </tr>
 </table>
@@ -506,17 +523,35 @@ You must put the properties file in the directory <code>META-INF/gradle-plugins<
 <div class="paragraph">
 <p>That&#8217;s all you need to do in your plugin, so now you can replace the following line of the build script:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock multi-language-sample">
+<div class="title">build.gradle</div>
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">apply plugin: org.example.greeting.GreetingPlugin <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">apply plugin: org.example.greeting.GreetingPlugin</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">build.gradle.kts</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-kotlin" data-lang="kotlin">apply&lt;org.example.greeting.GreetingPlugin&gt;()</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>with one that uses the plugin ID:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock multi-language-sample">
+<div class="title">build.gradle</div>
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">apply plugin : 'org.example.greeting'</code></pre>
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">plugins {
+  id 'org.example.greeting'
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">build.gradle.kts</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-kotlin" data-lang="kotlin">plugins {
+  id("org.example.greeting")
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -529,7 +564,7 @@ You must put the properties file in the directory <code>META-INF/gradle-plugins<
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Always qualify the plugin name with a namespace that is unique to you instead of the "org.example" used in this guide. Doing so helps avoid name clashes between plugins. You can find more details about plugin IDs in the <a href="https://docs.gradle.org/4.7/userguide/custom_plugins.html#sec:creating_a_plugin_id">User Manual</a>.
+Always qualify the plugin name with a namespace that is unique to you instead of the "org.example" used in this guide. Doing so helps avoid name clashes between plugins. You can find more details about plugin IDs in the <a href="https://docs.gradle.org/4.8/userguide/custom_plugins.html#sec:creating_a_plugin_id">User Manual</a>.
 </td>
 </tr>
 </table>
@@ -569,19 +604,19 @@ Always qualify the plugin name with a namespace that is unique to you instead of
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://docs.gradle.org/4.7/userguide/java_gradle_plugin.html">Simplifying plugin development with the Java Gradle Plugin Development Plugin</a></p>
+<p><a href="https://docs.gradle.org/4.8/userguide/java_gradle_plugin.html">Simplifying plugin development with the Java Gradle Plugin Development Plugin</a></p>
 </li>
 <li>
 <p><a href="https://guides.gradle.org/publishing-plugins-to-gradle-plugin-portal/">Publishing plugins to the Gradle Plugin Portal</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/4.7/userguide/custom_plugins.html#sec:getting_input_from_the_build">Modeling your domain with extensions</a></p>
+<p><a href="https://docs.gradle.org/4.8/userguide/custom_plugins.html#sec:getting_input_from_the_build">Modeling your domain with extensions</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/4.7/userguide/test_kit.html">Testing plugins</a></p>
+<p><a href="https://docs.gradle.org/4.8/userguide/test_kit.html">Testing plugins</a></p>
 </li>
 <li>
-<p><a href="https://docs.gradle.org/4.7/userguide/more_about_tasks.html#sec:up_to_date_checks">Adding incremental build support to new task types</a></p>
+<p><a href="https://docs.gradle.org/4.8/userguide/more_about_tasks.html#sec:up_to_date_checks">Adding incremental build support to new task types</a></p>
 </li>
 </ul>
 </div>
