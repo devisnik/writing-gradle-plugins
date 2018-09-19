@@ -4,7 +4,7 @@ This guide walks you through the process of creating reusable build logic in a G
 
 == What you'll build
 
-You'll write a simple plugin that adds a new task type and creates a task of that type in whatever project its applied to. You will also prove that the plugin works and see its effect by applying the plugin to a build.
+You'll write a simple plugin that adds a new task type and creates a task of that type in whatever project it's applied to. You will also prove that the plugin works and see its effect by applying the plugin to a build.
 
 == What you'll need
 
@@ -30,7 +30,7 @@ Next, you will create a special directory structure for the plugin code:
 $ mkdir -p buildSrc/src/main/java/org/example/greeting
 ----
 
-TIP: If you'd like to learn more about this `buildSrc` directory, you can read about how it allows you to organize your build logic {user-manual}organizing_gradle_projects.html#sec:build_sources[in the User Manual].
+TIP: If you'd like to learn more about this `buildSrc` directory, you can read about how it allows you to organize your build logic in the {user-manual}organizing_gradle_projects.html#sec:build_sources[User Manual].
 
 TIP: You will often want to publish the plugin so that it can be reused across multiple builds. You can learn about the options to do just that in <<Next steps>>.
 
@@ -90,7 +90,7 @@ include::{gradle-outdir}/hello/out.txt[]
 
 The bulk of the output reflects that the files in `buildSrc` are treated as a Java project, which needs to be built first. Once that happens, the classes inside that project become available in your main build and the main build can execute the task or tasks that you specified.
 
-Your build is currently just using the default property values for the greeting, hence why it prints out "Hello, World!". This doesn't have to be the case as you can configure the task directly in the build script:
+Your build is currently just using the default property values for the greeting, hence it prints out "Hello, World!". This doesn't have to be the case as you can configure the task directly in the build script:
 
 [source.multi-language-sample,groovy]
 .build.gradle
